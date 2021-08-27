@@ -9,7 +9,7 @@ import time
 
 
 keywords = pd.read_csv('input/scientific_botanical_names_veggies_fruits.csv')
-lnk_output = pd.DataFrame(columns=['search_terms','src_base64'])
+lnk_output = pd.DataFrame(columns=['search_terms','src_link'])
 
 def search_google(search_query):
     browser = webdriver.Chrome(ChromeDriverManager().install())
@@ -52,7 +52,7 @@ def write_df(a, b):
     row = [a, b]
     lnk_output.loc[len(lnk_output)] = row
     lnk_output.append(row, ignore_index=True)
-    lnk_output.to_csv("output/links/img_src_links.csv", index=False, mode='w', header=False, sep='|')
+    lnk_output.to_csv("output/links/img_src_links.csv", index=False, mode='w', header=True, sep='|')
 
 
 # Loops through the list of search input
