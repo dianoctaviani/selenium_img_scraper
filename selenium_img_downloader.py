@@ -1,11 +1,13 @@
 import pandas as pd
 import urllib.request
-import time
 from urllib.request import Request, urlopen
 import base64
+import logging
+import socket
 
 # List of img src for the image downloads
 img_src = pd.read_csv('output/links/img_src_links.csv', sep='|')
+socket.setdefaulttimeout(15)
 
 # Function to check if result is base64
 def check_for_b64(source):
@@ -17,6 +19,8 @@ def check_for_b64(source):
 
 # Function to perform the image downloads
 def download_img():
+    logging.basicConfig(filename='logging/logging.log', filemode='w', format='%(name)s | %(levelname)s | %(message)s')
+    
     for row in img_src.itertuples(index=True, name='Pandas'):
         # Check if src content is base64 instead of URL link
         is_b64 = check_for_b64(row.src_link)
@@ -24,15 +28,17 @@ def download_img():
         if is_b64:
             image_format = is_b64
             content = base64.b64decode(row.src_link.split(';base64')[1])
-            with open('output/images/'+row.search_terms+'.png'.format(image_format), 'wb') as f:
-                f.write(content)
+            try:
+                with open('output/images/'+row.search_terms+'.png'.format(image_format), 'wb') as f:
+                    f.write(content)
+            except Exception as e:
+                logging.error(''+row.search_terms+' | '+row.src_link+' | '+str(e)+'')
         # Else, if it is a direct URL, then perform urlretrieve to download the image
         else:
             try:
                 urllib.request.urlretrieve(''+row.src_link+'', 'output/images/'+row.search_terms+'.png')
-                time.sleep(2)
-            except:
-                print('An exception occurred for '+row.search_terms+'') 
+            except Exception as e: 
+                logging.error(''+row.search_terms+' | '+row.src_link+' | '+str(e)+'')
 
 # Calling the image download function
 download_img()

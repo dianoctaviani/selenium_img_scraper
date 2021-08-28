@@ -33,7 +33,7 @@ def search_google(search_query):
 
     # XPath of the image display 
     fir_img = browser.find_element_by_xpath('//*[@id="Sva75c"]/div/div/div[3]/div[2]/c-wiz/div/div[1]/div[1]/div[2]/div[1]/a/img')
-    
+
     # Wait between interaction
     time.sleep(3)
     fir_img.click()
