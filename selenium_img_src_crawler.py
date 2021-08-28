@@ -8,11 +8,11 @@ import pandas as pd
 import time
 
 
-keywords = pd.read_csv('input/scientific_botanical_names_veggies_fruits.csv')
+chromedriver = ChromeDriverManager().install()
+keywords = pd.read_csv('input/scientific_botanical_names_veggies_fruits.csv', sep=",")
 lnk_output = pd.DataFrame(columns=['search_terms','src_link'])
 
 def search_google(search_query):
-    browser = webdriver.Chrome(ChromeDriverManager().install())
     search_url = f"https://www.google.com/search?site=&tbm=isch&source=hp&biw=1873&bih=990&q={search_query}"
 
     options = webdriver.ChromeOptions()
@@ -22,6 +22,8 @@ def search_google(search_query):
     options.add_argument('--disable-web-security')
     options.add_argument('--allow-running-insecure-content')
     options.add_argument('--allow-cross-origin-auth-prompt')
+
+    browser = webdriver.Chrome(chromedriver, options=options)
 
     # Open browser to begin search
     browser.get(search_url)
@@ -57,5 +59,8 @@ def write_df(a, b):
 
 # Loops through the list of search input
 for i in keywords['scientific_names']:
-    items = search_google(i)
-    write_df(i.replace(' ', '_'), items)
+    try:
+        items = search_google(i)
+        write_df(i.replace(' ', '_'), items)
+    except Exception as e: 
+        print(e)
