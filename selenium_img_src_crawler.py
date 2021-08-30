@@ -10,7 +10,6 @@ import time
 
 chromedriver = ChromeDriverManager().install()
 keywords = pd.read_csv('input/scientific_botanical_names_veggies_fruits.csv', sep=",")
-lnk_output = pd.DataFrame(columns=['search_terms','src_link'])
 
 def search_google(search_query):
     search_url = f"https://www.google.com/search?site=&tbm=isch&source=hp&biw=1873&bih=990&q={search_query}"
@@ -43,24 +42,18 @@ def search_google(search_query):
     # Retrieve attribute of src from the element
     img_src = fir_img.get_attribute('src')
 
-    # Quit session and terminate browser
-    browser.close()
-    browser.quit()
+    return img_src
 
-    return(img_src)
 
-# Function to write the src data over to a dataframe
-def write_df(a, b):
-    row = [a, b]
-    lnk_output.loc[len(lnk_output)] = row
-    lnk_output.append(row, ignore_index=True)
-    lnk_output.to_csv("output/links/img_src_links.csv", index=False, mode='w', header=True, sep='|')
-
+# Creating header for file containing image source link 
+with open("output/links/img_src_links.csv", "w") as outfile:
+    outfile.write("search_terms|src_link\n")
 
 # Loops through the list of search input
-for i in keywords['scientific_names']:
+for keyword in keywords['scientific_names']:
     try:
-        items = search_google(i)
-        write_df(i.replace(' ', '_'), items)
+        link = search_google(keyword)
+        with open("output/links/img_src_links.csv", "a") as outfile:
+            outfile.write(f"{keyword}|{link}\n")
     except Exception as e: 
         print(e)
