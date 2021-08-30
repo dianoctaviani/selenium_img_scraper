@@ -53,6 +53,7 @@ with open("output/links/img_src_links.csv", "w") as outfile:
 for keyword in keywords['scientific_names']:
     try:
         link = search_google(keyword)
+        keyword = keyword.replace(" ", "_")
         with open("output/links/img_src_links.csv", "a") as outfile:
             outfile.write(f"{keyword}|{link}\n")
     except Exception as e: 
